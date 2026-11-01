@@ -22,7 +22,12 @@ public class AccountService {
      * they don't reduce what's available until then.
      */
     public long availableBalance(String accountId) {
-        return store.account(accountId).ledgerBalanceCents();
+        long sum = 0;
+        for(Hold x: store.holdsFor(accountId)){
+            if(x.status() == HoldStatus.ACTIVE) 
+                sum += x.amountCents();
+        }
+        return store.account(accountId).ledgerBalanceCents() - sum;
     }
 
     public Hold placeHold(String holdId, String accountId, long amountCents) {
